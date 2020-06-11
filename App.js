@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, FlatList } from 'react-native';
+import { StyleSheet, View, FlatList, Button } from 'react-native';
 
 import GoalItem from './components/GoalItem';
 import GoalInput from './components/GoalInput';
 
 export default function App() {
   const [goals, setGoals] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const addGoal = goalTitle => {
-    // setGoals([...goals, enteredGoal]);
-    // setGoals(currentGoals => [...goals, enteredGoal]); // latest state snapshot
-
-    // Flatlist requires the data to be array of objects with key-value pairs
-    setGoals(currentGoals => [...goals, { id: Math.random().toString(), value: goalTitle }]); // latest state snapshot
-    // console.log((goals.length).toString() + ": " + enteredGoal);
+    setGoals(currentGoals => [...goals, { id: Math.random().toString(), value: goalTitle }]); // latest state snapshot    
+    setIsModalOpen(false);
   };
 
   const deleteGoal = goalId => {
@@ -22,25 +19,17 @@ export default function App() {
     });
   };
 
+  const hideModal = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <View style={styles.screen}>
-      <GoalInput onAddGoal={addGoal}/>
+      <Button title="Add New Goal" onPress={() => setIsModalOpen(true)} />
 
-      {/* <ScrollView>
-        {goals.map((goal) => {
-          return (
-            <Text key={goal}>{goal}</Text>
-          );
-        })}
-        {goals.map((goal) => <View key={goal} style={styles.listItem}>
-                                <Text>
-                                  {goal}
-                                </Text>
-                              </View>)}
-      </ScrollView> */}
+      <GoalInput isVisible={isModalOpen} onAddGoal={addGoal} onHideModal={hideModal} />
 
       <FlatList
-        // keyExtractor={(item, index) => item.id} // this would tell which field is the key in the object, if you don't write 'key'
         data={goals}
         renderItem={itemData => <GoalItem id={itemData.item.id} onDeleteGoal={deleteGoal} goalTitle={itemData.item.value} />}/>
     </View>
@@ -48,7 +37,7 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  screen: {
-    padding: 50
-  }
+    screen: {
+        padding: 50
+    }
 });
